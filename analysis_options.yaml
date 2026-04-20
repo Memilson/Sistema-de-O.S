@@ -1,0 +1,7 @@
+# Flutter Analysis Options
+
+# https://dart.dev/analysis-options
+include: package:flutter/analysis_options.yaml
+
+# Additional options can be added below,
+# such as linter and other configurations.
