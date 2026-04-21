@@ -9,10 +9,10 @@ mixin LoaderMixin {
 
     showDialog(
       context: context,
-      barrierDismissible: false, // Impede fechar ao clicar fora
+      barrierDismissible: false,
       builder: (context) {
         return PopScope(
-          canPop: false, // Impede fechar pelo botão voltar do Android
+          canPop: false,
           child: Center(
             child: Container(
               padding: const EdgeInsets.all(24),
@@ -20,14 +20,10 @@ mixin LoaderMixin {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Column(
-                children: [
-                  const CircularProgressIndicator(),
-                  ElevatedButton(
-                    onPressed: () => hideLoading(context),
-                    child: const Text("Para o Loader"),
-                  ),
-                ],
+              child: const SizedBox(
+                width: 42,
+                height: 42,
+                child: CircularProgressIndicator(strokeWidth: 3),
               ),
             ),
           ),
@@ -38,7 +34,10 @@ mixin LoaderMixin {
 
   void hideLoading(BuildContext context) {
     if (_isLoaderOpen) {
-      Navigator.of(context, rootNavigator: true).pop();
+      final navigator = Navigator.of(context, rootNavigator: true);
+      if (navigator.canPop()) {
+        navigator.pop();
+      }
       _isLoaderOpen = false;
     }
   }

@@ -14,10 +14,13 @@ dependencies:
   signature: ^6.0.0
   url_launcher: ^6.0.0
   intl: ^0.18.0
+  flutter_dotenv: ^5.2.1
   flutter:
     sdk: flutter
   supabase_flutter: ^2.12.2
   uuid: ^4.0.0
+  bootstrap_icons: ^1.13.1
 flutter:
   assets:
+    - .env
     - assets/images/

@@ -6,6 +6,9 @@ class OrdemServico extends BaseModel {
   final String descricao;
   final double valor;
   final String status;
+  final String? fotoAntesPath;
+  final String? fotoDepoisPath;
+  final String? assinaturaBase64;
 
   OrdemServico({
     String? id,
@@ -15,6 +18,9 @@ class OrdemServico extends BaseModel {
     required this.descricao,
     required this.valor,
     this.status = 'Em aberto',
+    this.fotoAntesPath,
+    this.fotoDepoisPath,
+    this.assinaturaBase64,
   }) : super(id: id, createdAt: createdAt);
 
   OrdemServico.fromMap(Map<String, dynamic> map)
@@ -23,7 +29,36 @@ class OrdemServico extends BaseModel {
         descricao = map['descricao'] as String,
         valor = (map['valor'] as num).toDouble(),
         status = map['status'] as String,
+        fotoAntesPath = map['fotoAntesPath'] as String?,
+        fotoDepoisPath = map['fotoDepoisPath'] as String?,
+        assinaturaBase64 = map['assinaturaBase64'] as String?,
         super.fromMap(map);
+
+  OrdemServico copyWith({
+    String? id,
+    DateTime? createdAt,
+    String? clienteId,
+    String? clienteNome,
+    String? descricao,
+    double? valor,
+    String? status,
+    String? fotoAntesPath,
+    String? fotoDepoisPath,
+    String? assinaturaBase64,
+  }) {
+    return OrdemServico(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      clienteId: clienteId ?? this.clienteId,
+      clienteNome: clienteNome ?? this.clienteNome,
+      descricao: descricao ?? this.descricao,
+      valor: valor ?? this.valor,
+      status: status ?? this.status,
+      fotoAntesPath: fotoAntesPath ?? this.fotoAntesPath,
+      fotoDepoisPath: fotoDepoisPath ?? this.fotoDepoisPath,
+      assinaturaBase64: assinaturaBase64 ?? this.assinaturaBase64,
+    );
+  }
 
   @override
   Map<String, dynamic> toMap() {
@@ -35,6 +70,9 @@ class OrdemServico extends BaseModel {
       'descricao': descricao,
       'valor': valor,
       'status': status,
+      'fotoAntesPath': fotoAntesPath,
+      'fotoDepoisPath': fotoDepoisPath,
+      'assinaturaBase64': assinaturaBase64,
     };
   }
 }

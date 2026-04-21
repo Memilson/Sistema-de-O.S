@@ -22,6 +22,24 @@ class Cliente extends BaseModel {
         telefone = map['telefone'] as String? ?? '',
         super.fromMap(map);
 
+  Cliente copyWith({
+    String? id,
+    DateTime? createdAt,
+    String? nome,
+    String? cpfCnpj,
+    String? email,
+    String? telefone,
+  }) {
+    return Cliente(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      nome: nome ?? this.nome,
+      cpfCnpj: cpfCnpj ?? this.cpfCnpj,
+      email: email ?? this.email,
+      telefone: telefone ?? this.telefone,
+    );
+  }
+
   @override
   Map<String, dynamic> toMap() {
     final baseMap = super.toMap();

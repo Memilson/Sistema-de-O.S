@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:serviceflow/app/core/helpers/app.config.dart';
 import 'package:serviceflow/app/core/mixins/loader.mixin.dart';
 import 'package:serviceflow/app/core/mixins/messages.mixin.dart';
+import 'package:serviceflow/app/core/services/service_locator.dart';
+import 'package:serviceflow/app/core/theme/app_icons.dart';
 import 'package:serviceflow/app/app_routes.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../shared/widgets/custom_text_field.dart';
 import '../../../../shared/widgets/app_logo.dart';
 import '../../../../shared/widgets/custom_button.dart';
+import '../../auth_repository.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -15,8 +20,10 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> with MessagesMixin, LoaderMixin {
   final _formKey = GlobalKey<FormState>();
+  final _authRepository = ServiceLocator.instance.get<AuthRepository>();
   late TextEditingController emailController;
   late TextEditingController senhaController;
+  bool _criandoConta = false;
 
   @override
   void initState() {
@@ -32,15 +39,77 @@ class _LoginPageState extends State<LoginPage> with MessagesMixin, LoaderMixin {
     super.dispose();
   }
 
-  void _fazerLogin() {
+  Future<void> _fazerLogin() async {
     if (_formKey.currentState!.validate()) {
       showLoading(context);
 
-      Future.delayed(const Duration(seconds: 2), () {
+      try {
+        await _authRepository.login(
+          email: emailController.text,
+          password: senhaController.text,
+        );
+
+        if (!mounted) return;
         hideLoading(context);
-        Navigator.pushNamed(context, AppRoutes.dashboard);
-      });
+        Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
+      } on AuthException catch (e) {
+        if (!mounted) return;
+        hideLoading(context);
+        showError(context, e.message);
+      } catch (_) {
+        if (!mounted) return;
+        hideLoading(context);
+        showError(context, 'Erro ao autenticar no Supabase');
+      }
     }
+  }
+
+  Future<void> _criarConta() async {
+    if (_formKey.currentState!.validate()) {
+      showLoading(context);
+
+      try {
+        final response = await _authRepository.criarConta(
+          email: emailController.text,
+          password: senhaController.text,
+          emailRedirectTo: _authRedirectUrl,
+        );
+
+        if (!mounted) return;
+        hideLoading(context);
+
+        if (response.session != null) {
+          Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
+          return;
+        }
+
+        showSuccess(
+          context,
+          'Conta criada. Confirme seu e-mail para fazer login.',
+        );
+        setState(() => _criandoConta = false);
+      } on AuthException catch (e) {
+        if (!mounted) return;
+        hideLoading(context);
+        showError(context, e.message);
+      } catch (_) {
+        if (!mounted) return;
+        hideLoading(context);
+        showError(context, 'Erro ao criar conta no Supabase');
+      }
+    }
+  }
+
+  String get _authRedirectUrl {
+    final configuredUrl = AppConfig.supabaseRedirectUrl;
+    if (configuredUrl != null) return configuredUrl;
+
+    final uri = Uri.base;
+    if (uri.hasScheme && uri.hasAuthority) {
+      return '${uri.scheme}://${uri.authority}/';
+    }
+
+    return 'serviceflow://login-callback';
   }
 
   @override
@@ -63,7 +132,7 @@ class _LoginPageState extends State<LoginPage> with MessagesMixin, LoaderMixin {
                 CustomTextField(
                   label: 'E-mail',
                   controller: emailController,
-                  prefixIcon: Icons.email_outlined,
+                  prefixIcon: AppIcons.email,
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -79,7 +148,7 @@ class _LoginPageState extends State<LoginPage> with MessagesMixin, LoaderMixin {
                 CustomTextField(
                   label: 'Senha',
                   controller: senhaController,
-                  prefixIcon: Icons.lock_outline,
+                  prefixIcon: AppIcons.lock,
                   isPassword: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -93,15 +162,17 @@ class _LoginPageState extends State<LoginPage> with MessagesMixin, LoaderMixin {
                 ),
                 const SizedBox(height: 32),
                 CustomButton(
-                  label: 'Entrar',
-                  onPressed: _fazerLogin,
+                  label: _criandoConta ? 'Criar conta' : 'Entrar',
+                  onPressed: _criandoConta ? _criarConta : _fazerLogin,
                 ),
                 const SizedBox(height: 12),
                 TextButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, AppRoutes.cadastroCliente);
+                    setState(() => _criandoConta = !_criandoConta);
                   },
-                  child: const Text('Criar nova conta'),
+                  child: Text(
+                    _criandoConta ? 'Já tenho conta' : 'Criar nova conta',
+                  ),
                 ),
               ],
             ),

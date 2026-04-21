@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import '../theme/app_icons.dart';
 
 mixin MessagesMixin {
   void showSuccess(BuildContext context, String message) {
-    _showSnackBar(context, message, Colors.green, Icons.check_circle);
+    _showSnackBar(context, message, Colors.green, AppIcons.checkCircle);
   }
 
   void showError(BuildContext context, String message) {
-    _showSnackBar(context, message, Colors.redAccent, Icons.error);
+    _showSnackBar(context, message, Colors.redAccent, AppIcons.error);
   }
 
   void _showSnackBar(

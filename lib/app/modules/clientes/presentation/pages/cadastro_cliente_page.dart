@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:serviceflow/app/core/mixins/loader.mixin.dart';
 import 'package:serviceflow/app/core/mixins/messages.mixin.dart';
+import 'package:serviceflow/app/core/services/service_locator.dart';
+import 'package:serviceflow/app/core/theme/app_icons.dart';
+import 'package:serviceflow/app/shared/widgets/app_back_button.dart';
 import '../../../../shared/widgets/custom_text_field.dart';
 import '../../../../shared/widgets/custom_button.dart';
 import '../../cliente.model.dart';
@@ -17,12 +20,26 @@ class CadastroClientePage extends StatefulWidget {
 class _CadastroClientePageState extends State<CadastroClientePage>
     with MessagesMixin, LoaderMixin {
   final _formKey = GlobalKey<FormState>();
-  final _repository = ClienteRepository();
+  final _repository = ServiceLocator.instance.get<ClienteRepository>();
 
   final nomeController = TextEditingController();
   final cpfCnpjController = TextEditingController();
   final emailController = TextEditingController();
   final telefoneController = TextEditingController();
+  Cliente? _cliente;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (_cliente == null && args is Cliente) {
+      _cliente = args;
+      nomeController.text = args.nome;
+      cpfCnpjController.text = args.cpfCnpj;
+      emailController.text = args.email;
+      telefoneController.text = args.telefone;
+    }
+  }
 
   @override
   void dispose() {
@@ -39,6 +56,8 @@ class _CadastroClientePageState extends State<CadastroClientePage>
 
       try {
         final cliente = Cliente(
+          id: _cliente?.id,
+          createdAt: _cliente?.createdAt,
           nome: nomeController.text,
           cpfCnpj: cpfCnpjController.text,
           email: emailController.text,
@@ -48,7 +67,7 @@ class _CadastroClientePageState extends State<CadastroClientePage>
         await _repository.salvar(cliente);
 
         hideLoading(context);
-        showSuccess(context, 'Cliente cadastrado com sucesso!');
+        showSuccess(context, 'Cliente salvo com sucesso!');
         Navigator.pop(context);
       } catch (e) {
         hideLoading(context);
@@ -63,7 +82,9 @@ class _CadastroClientePageState extends State<CadastroClientePage>
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cadastro de Cliente'),
+        leading: const AppBackButton(),
+        title:
+            Text(_cliente == null ? 'Cadastro de Cliente' : 'Editar Cliente'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -74,7 +95,7 @@ class _CadastroClientePageState extends State<CadastroClientePage>
               CustomTextField(
                 label: 'Nome / Razão Social',
                 controller: nomeController,
-                prefixIcon: Icons.person_outline,
+                prefixIcon: AppIcons.person,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Informe o nome';
@@ -92,7 +113,7 @@ class _CadastroClientePageState extends State<CadastroClientePage>
                 ],
                 decoration: InputDecoration(
                   labelText: 'CPF / CNPJ',
-                  prefixIcon: const Icon(Icons.badge_outlined),
+                  prefixIcon: const Icon(AppIcons.badge),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -102,16 +123,14 @@ class _CadastroClientePageState extends State<CadastroClientePage>
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide:
-                        BorderSide(color: theme.primaryColor, width: 2),
+                    borderSide: BorderSide(color: theme.primaryColor, width: 2),
                   ),
                   errorBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide:
-                        BorderSide(color: theme.colorScheme.error),
+                    borderSide: BorderSide(color: theme.colorScheme.error),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 18),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -124,7 +143,7 @@ class _CadastroClientePageState extends State<CadastroClientePage>
               CustomTextField(
                 label: 'E-mail',
                 controller: emailController,
-                prefixIcon: Icons.email_outlined,
+                prefixIcon: AppIcons.email,
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -146,7 +165,7 @@ class _CadastroClientePageState extends State<CadastroClientePage>
                 ],
                 decoration: InputDecoration(
                   labelText: 'Telefone',
-                  prefixIcon: const Icon(Icons.phone_outlined),
+                  prefixIcon: const Icon(AppIcons.phone),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -156,16 +175,14 @@ class _CadastroClientePageState extends State<CadastroClientePage>
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide:
-                        BorderSide(color: theme.primaryColor, width: 2),
+                    borderSide: BorderSide(color: theme.primaryColor, width: 2),
                   ),
                   errorBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide:
-                        BorderSide(color: theme.colorScheme.error),
+                    borderSide: BorderSide(color: theme.colorScheme.error),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 18),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {

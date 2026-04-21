@@ -1,8 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:signature/signature.dart';
 import 'package:serviceflow/app/core/mixins/loader.mixin.dart';
 import 'package:serviceflow/app/core/mixins/messages.mixin.dart';
+import 'package:serviceflow/app/core/services/service_locator.dart';
+import 'package:serviceflow/app/core/theme/app_icons.dart';
+import 'package:serviceflow/app/shared/widgets/app_back_button.dart';
 import '../../../../shared/widgets/custom_text_field.dart';
 import '../../../../shared/widgets/custom_button.dart';
 import '../../../clientes/cliente.model.dart';
@@ -20,8 +25,8 @@ class NovaOsPage extends StatefulWidget {
 class _NovaOsPageState extends State<NovaOsPage>
     with MessagesMixin, LoaderMixin {
   final _formKey = GlobalKey<FormState>();
-  final _clienteRepo = ClienteRepository();
-  final _osRepo = OrdemServicoRepository();
+  final _clienteRepo = ServiceLocator.instance.get<ClienteRepository>();
+  final _osRepo = ServiceLocator.instance.get<OrdemServicoRepository>();
 
   final descricaoController = TextEditingController();
   final valorController = TextEditingController();
@@ -88,14 +93,24 @@ class _NovaOsPageState extends State<NovaOsPage>
       showLoading(context);
 
       try {
+        final assinatura = await _signatureController.toPngBytes();
         final os = OrdemServico(
           clienteId: _clienteSelecionado!.id ?? '',
           clienteNome: _clienteSelecionado!.nome,
           descricao: descricaoController.text,
           valor: double.tryParse(valorController.text) ?? 0.0,
+          fotoAntesPath: _fotoAntes?.path,
+          fotoDepoisPath: _fotoDepois?.path,
+          assinaturaBase64:
+              assinatura == null ? null : base64Encode(assinatura),
         );
 
-        await _osRepo.salvar(os);
+        await _osRepo.salvarComEvidencias(
+          os,
+          fotoAntes: await _fotoAntes?.readAsBytes(),
+          fotoDepois: await _fotoDepois?.readAsBytes(),
+          assinatura: assinatura,
+        );
 
         hideLoading(context);
         showSuccess(context, 'Ordem de Serviço criada!');
@@ -113,6 +128,7 @@ class _NovaOsPageState extends State<NovaOsPage>
 
     return Scaffold(
       appBar: AppBar(
+        leading: const AppBackButton(),
         title: const Text('Nova Ordem de Serviço'),
       ),
       body: SingleChildScrollView(
@@ -126,10 +142,10 @@ class _NovaOsPageState extends State<NovaOsPage>
               _carregandoClientes
                   ? const Center(child: CircularProgressIndicator())
                   : DropdownButtonFormField<Cliente>(
-                      value: _clienteSelecionado,
+                      initialValue: _clienteSelecionado,
                       decoration: InputDecoration(
                         labelText: 'Cliente',
-                        prefixIcon: const Icon(Icons.person_outline),
+                        prefixIcon: const Icon(AppIcons.person),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -172,15 +188,14 @@ class _NovaOsPageState extends State<NovaOsPage>
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide:
-                        BorderSide(color: theme.primaryColor, width: 2),
+                    borderSide: BorderSide(color: theme.primaryColor, width: 2),
                   ),
                   errorBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(color: theme.colorScheme.error),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 18),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -195,7 +210,7 @@ class _NovaOsPageState extends State<NovaOsPage>
               CustomTextField(
                 label: 'Valor (R\$)',
                 controller: valorController,
-                prefixIcon: Icons.attach_money,
+                prefixIcon: AppIcons.currency,
                 keyboardType:
                     const TextInputType.numberWithOptions(decimal: true),
                 validator: (value) {
@@ -250,7 +265,7 @@ class _NovaOsPageState extends State<NovaOsPage>
                 alignment: Alignment.centerRight,
                 child: TextButton.icon(
                   onPressed: () => _signatureController.clear(),
-                  icon: const Icon(Icons.clear),
+                  icon: const Icon(AppIcons.close),
                   label: const Text('Limpar assinatura'),
                 ),
               ),
@@ -294,7 +309,7 @@ class _FotoBotao extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              foto != null ? Icons.check_circle : Icons.camera_alt_outlined,
+              foto != null ? AppIcons.checkCircle : AppIcons.camera,
               color: foto != null ? Colors.green : Colors.grey,
               size: 32,
             ),
