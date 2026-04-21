@@ -1,9 +1,7 @@
 import 'package:bootstrap_icons/bootstrap_icons.dart';
 import 'package:flutter/widgets.dart';
-
 class AppIcons {
   AppIcons._();
-
   static const IconData add = BootstrapIcons.plus_lg;
   static const IconData addCircle = BootstrapIcons.plus_circle;
   static const IconData addCustomer = BootstrapIcons.person_add;

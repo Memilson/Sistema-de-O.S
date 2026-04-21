@@ -16,12 +16,8 @@ import 'app/modules/ordens/ordem_servico_repository.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: '.env');
-  await Supabase.initialize(
-    url: AppConfig.supabaseUrl,
-    anonKey: AppConfig.supabaseKey,);
-  if (!kIsWeb) {
-    await DatabaseHelper.instance.db;
-  }
+  await Supabase.initialize(url: AppConfig.supabaseUrl, anonKey: AppConfig.supabaseKey);
+  if (!kIsWeb) await DatabaseHelper.instance.db;
   _registerDependencies();
   runApp(const AppEntry());
 }
@@ -34,18 +30,13 @@ void _registerDependencies() {
   locator.registerSingleton(evidenceStorageService);
   locator.registerSingleton(WhatsappService());
   locator.registerSingleton(AuthRepository());
-  locator.registerSingleton(
-    ClienteRepository(offlineSyncService: offlineSyncService),
-  );
-  locator.registerSingleton(
-    OrdemServicoRepository(
-      offlineSyncService: offlineSyncService,
-      evidenceStorageService: evidenceStorageService,
-    ),
-  );
+  locator.registerSingleton(ClienteRepository(offlineSyncService: offlineSyncService));
+  locator.registerSingleton(OrdemServicoRepository(offlineSyncService: offlineSyncService, evidenceStorageService: evidenceStorageService));
 }
 class AppEntry extends StatelessWidget {
   const AppEntry({super.key});
   @override
   Widget build(BuildContext context) {
-    return AppWidget();}}
+    return AppWidget();
+  }
+}

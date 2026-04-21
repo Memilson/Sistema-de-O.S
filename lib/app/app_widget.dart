@@ -7,6 +7,7 @@ class AppWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'ServiceFlow',
+      debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       initialRoute: AppRoutes.splash,
       routes: AppRoutes.routes,

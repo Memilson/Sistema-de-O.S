@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'modules/splash/presentation/pages/splash_page.dart';
 import 'modules/auth/presentation/pages/login_page.dart';
 import 'modules/clientes/presentation/pages/clientes_page.dart';
@@ -8,7 +7,6 @@ import 'modules/dashboard/presentation/pages/dashboard_page.dart';
 import 'modules/ordens/presentation/pages/ordem_detalhe_page.dart';
 import 'modules/ordens/presentation/pages/ordens_page.dart';
 import 'modules/ordens/presentation/pages/nova_os_page.dart';
-
 class AppRoutes {
   static const splash = '/splash';
   static const login = '/auth/login';
@@ -18,15 +16,14 @@ class AppRoutes {
   static const ordens = '/ordens';
   static const novaOs = '/ordens/nova';
   static const ordemDetalhe = '/ordens/detalhe';
-
   static Map<String, WidgetBuilder> get routes => {
-        splash: (_) => const SplashPage(),
-        login: (_) => const LoginPage(),
-        dashboard: (_) => const DashboardPage(),
-        clientes: (_) => const ClientesPage(),
-        cadastroCliente: (_) => const CadastroClientePage(),
-        ordens: (_) => const OrdensPage(),
-        novaOs: (_) => const NovaOsPage(),
-        ordemDetalhe: (_) => const OrdemDetalhePage(),
-      };
+    splash: (_) => const SplashPage(),
+    login: (_) => const LoginPage(),
+    dashboard: (_) => const DashboardPage(),
+    clientes: (_) => const ClientesPage(),
+    cadastroCliente: (_) => const CadastroClientePage(),
+    ordens: (_) => const OrdensPage(),
+    novaOs: (_) => const NovaOsPage(),
+    ordemDetalhe: (_) => const OrdemDetalhePage(),
+  };
 }
