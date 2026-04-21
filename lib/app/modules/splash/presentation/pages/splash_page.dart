@@ -51,14 +51,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withAlpha(30),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: const AppLogo(width: 120, height: 120),
-                  ),
+                  const AppLogo(width: 120, height: 120),
                   const SizedBox(height: 32),
                   const Text('ServiceFlow', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700, color: Colors.white)),
                   const SizedBox(height: 8),
