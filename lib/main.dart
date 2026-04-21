@@ -13,31 +13,22 @@ import 'app/core/services/whatsapp_service.dart';
 import 'app/modules/auth/auth_repository.dart';
 import 'app/modules/clientes/cliente_repository.dart';
 import 'app/modules/ordens/ordem_servico_repository.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   await dotenv.load(fileName: '.env');
-
   await Supabase.initialize(
     url: AppConfig.supabaseUrl,
-    anonKey: AppConfig.supabaseKey,
-  );
-
+    anonKey: AppConfig.supabaseKey,);
   if (!kIsWeb) {
     await DatabaseHelper.instance.db;
   }
-
   _registerDependencies();
-
   runApp(const AppEntry());
 }
-
 void _registerDependencies() {
   final locator = ServiceLocator.instance;
   final offlineSyncService = OfflineSyncService();
   final evidenceStorageService = EvidenceStorageService();
-
   locator.registerSingleton(DioClient());
   locator.registerSingleton(offlineSyncService);
   locator.registerSingleton(evidenceStorageService);
@@ -53,12 +44,8 @@ void _registerDependencies() {
     ),
   );
 }
-
 class AppEntry extends StatelessWidget {
   const AppEntry({super.key});
-
   @override
   Widget build(BuildContext context) {
-    return AppWidget();
-  }
-}
+    return AppWidget();}}

@@ -26,9 +26,7 @@ class CustomTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Usando o Theme para garantir que a cor venha do nosso Design System
     final theme = Theme.of(context);
-
     return TextFormField(
       controller: controller,
       obscureText: isPassword,
@@ -56,7 +54,6 @@ class CustomTextField extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: theme.colorScheme.error),
         ),
-        // Espaçamento interno padronizado
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
       ),
