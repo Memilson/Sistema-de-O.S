@@ -1,9 +1,11 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../../core/services/whatsapp_service.dart';
 import '../../../../core/theme/app_icons.dart';
 import '../../../../shared/widgets/app_back_button.dart';
+import '../../../../core/helpers/image_loader.dart';
 import '../../ordem_servico.model.dart';
 import '../../ordem_servico_repository.dart';
 class OrdemDetalhePage extends StatefulWidget {
@@ -88,7 +90,7 @@ class _OrdemDetalhePageState extends State<OrdemDetalhePage> {
               border: Border.all(color: const Color(0xFFE0E0E0)),
             ),
             child: DropdownButtonFormField<String>(
-              initialValue: ordem.status,
+              value: ordem.status,
               decoration: const InputDecoration(labelText: 'Status', prefixIcon: Icon(AppIcons.flag)),
               items: const [
                 DropdownMenuItem(value: 'Em aberto', child: Text('Em aberto')),
@@ -100,10 +102,94 @@ class _OrdemDetalhePageState extends State<OrdemDetalhePage> {
           ),
           const SizedBox(height: 16),
           _InfoTile(icon: AppIcons.description, title: 'Descrição', value: ordem.descricao),
-          _InfoTile(icon: AppIcons.evidenceImage, title: 'Foto antes', value: ordem.fotoAntesPath ?? 'Não anexada'),
-          _InfoTile(icon: AppIcons.evidenceImage, title: 'Foto depois', value: ordem.fotoDepoisPath ?? 'Não anexada'),
-          _InfoTile(icon: AppIcons.signature, title: 'Assinatura', value: ordem.assinaturaBase64 == null ? 'Não anexada' : 'Assinatura registrada'),
+          _ImageTile(title: 'Foto antes', path: ordem.fotoAntesPath),
+          _ImageTile(title: 'Foto depois', path: ordem.fotoDepoisPath),
+          _SignatureTile(assinaturaBase64: ordem.assinaturaBase64),
           if (_saving) const Padding(padding: EdgeInsets.only(top: 16), child: LinearProgressIndicator()),
+        ],
+      ),
+    );
+  }
+}
+
+class _ImageTile extends StatelessWidget {
+  final String title;
+  final String? path;
+  const _ImageTile({required this.title, this.path});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: const Color(0xFFE0E0E0)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ListTile(
+            leading: Container(
+              width: 36, height: 36,
+              decoration: BoxDecoration(color: const Color(0xFF0078D4).withAlpha(20), borderRadius: BorderRadius.circular(4)),
+              child: const Icon(AppIcons.evidenceImage, size: 18, color: const Color(0xFF0078D4)),
+            ),
+            title: Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+            subtitle: Text(path != null ? 'Clique para ampliar' : 'Não anexada', style: const TextStyle(fontSize: 12)),
+          ),
+          if (path != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: SafeImage(path: path!, height: 200, width: double.infinity, clickable: true),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SignatureTile extends StatelessWidget {
+  final String? assinaturaBase64;
+  const _SignatureTile({this.assinaturaBase64});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: const Color(0xFFE0E0E0)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ListTile(
+            leading: Container(
+              width: 36, height: 36,
+              decoration: BoxDecoration(color: const Color(0xFF0078D4).withAlpha(20), borderRadius: BorderRadius.circular(4)),
+              child: const Icon(AppIcons.signature, size: 18, color: const Color(0xFF0078D4)),
+            ),
+            title: const Text('Assinatura', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+            subtitle: Text(assinaturaBase64 == null ? 'Não anexada' : 'Clique para ampliar', style: const TextStyle(fontSize: 12)),
+          ),
+          if (assinaturaBase64 != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Container(
+                height: 100,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: SafeImage(path: assinaturaBase64!, fit: BoxFit.contain, clickable: true),
+              ),
+            ),
         ],
       ),
     );

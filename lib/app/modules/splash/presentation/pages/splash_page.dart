@@ -5,7 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../app_routes.dart';
 class SplashPage extends StatefulWidget {
   final int maxSeconds;
-  const SplashPage({super.key, this.maxSeconds = 7});
+  const SplashPage({super.key, this.maxSeconds = 2});
   @override
   State<SplashPage> createState() => _SplashPageState();
 }

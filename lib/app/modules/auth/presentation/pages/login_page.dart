@@ -41,14 +41,24 @@ class _LoginPageState extends State<LoginPage> with MessagesMixin, LoaderMixin {
         if (!mounted) return;
         hideLoading(context);
         Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
-      } on AuthException catch (e) {
+      } catch (e) {
         if (!mounted) return;
         hideLoading(context);
-        showError(context, e.message);
-      } catch (_) {
-        if (!mounted) return;
-        hideLoading(context);
-        showError(context, 'Erro ao autenticar no Supabase');
+        
+        if (e is AuthException) {
+          showError(context, e.message);
+        } else if (e.toString().contains('SocketException') || e.toString().contains('Failed host lookup')) {
+          // Tenta login offline se for erro de conexão
+          final podeEntrar = await _authRepository.podeLogarOffline(emailController.text);
+          if (podeEntrar) {
+            showSuccess(context, 'Entrando em modo offline...');
+            Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
+          } else {
+            showError(context, 'Sem conexão. Login offline disponível apenas para o último usuário logado.');
+          }
+        } else {
+          showError(context, 'Erro ao autenticar: $e');
+        }
       }
     }
   }

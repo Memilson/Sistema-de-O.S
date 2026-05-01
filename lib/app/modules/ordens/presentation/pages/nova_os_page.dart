@@ -109,7 +109,7 @@ class _NovaOsPageState extends State<NovaOsPage> with MessagesMixin, LoaderMixin
                 _carregandoClientes
                     ? const Center(child: CircularProgressIndicator())
                     : DropdownButtonFormField<Cliente>(
-                        initialValue: _clienteSelecionado,
+                        value: _clienteSelecionado,
                         decoration: const InputDecoration(labelText: 'Cliente', prefixIcon: Icon(AppIcons.person)),
                         hint: const Text('Selecione um cliente'),
                         items: _clientes.map((c) => DropdownMenuItem<Cliente>(value: c, child: Text(c.nome))).toList(),
