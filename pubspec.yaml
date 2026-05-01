@@ -20,8 +20,6 @@ dependencies:
   supabase_flutter: ^2.12.2
   uuid: ^4.0.0
   bootstrap_icons: ^1.13.1
-  sqflite_common_ffi: ^2.4.0+3
-  sqlite3_flutter_libs: ^0.6.0+eol
 
 dev_dependencies:
   flutter_test:
