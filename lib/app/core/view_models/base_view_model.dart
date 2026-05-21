@@ -26,6 +26,7 @@ class BaseViewModel<T extends BaseModel> extends ChangeNotifier {
       errorMessage = null;
     } catch (e) {
       errorMessage = e.toString();
+    } finally {
       _setLoading(false);
     }
   }

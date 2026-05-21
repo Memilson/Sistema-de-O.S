@@ -37,27 +37,40 @@ class _LoginPageState extends State<LoginPage> with MessagesMixin, LoaderMixin {
     if (_formKey.currentState!.validate()) {
       showLoading(context);
       try {
-        await _authRepository.login(email: emailController.text, password: senhaController.text);
+        await _authRepository.login(
+          email: emailController.text,
+          password: senhaController.text,
+        );
         if (!mounted) return;
         hideLoading(context);
         Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
       } catch (e) {
         if (!mounted) return;
-        hideLoading(context);
-        
-        if (e is AuthException) {
-          showError(context, e.message);
-        } else if (e.toString().contains('SocketException') || e.toString().contains('Failed host lookup')) {
-          // Tenta login offline se for erro de conexão
-          final podeEntrar = await _authRepository.podeLogarOffline(emailController.text);
-          if (podeEntrar) {
-            showSuccess(context, 'Entrando em modo offline...');
+
+        final isNetworkError = e.toString().contains('SocketException') ||
+            e.toString().contains('ClientException');
+
+        if (isNetworkError) {
+          final podeLogarOffline =
+              await _authRepository.podeLogarOffline(emailController.text);
+          hideLoading(context);
+
+          if (podeLogarOffline) {
+            showSuccess(context, 'Entrando no modo offline.');
             Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
           } else {
-            showError(context, 'Sem conexão. Login offline disponível apenas para o último usuário logado.');
+            showError(
+              context,
+              'Sem conexão. O login offline está disponível apenas para o último usuário logado.',
+            );
           }
         } else {
-          showError(context, 'Erro ao autenticar: $e');
+          hideLoading(context);
+          if (e is AuthException) {
+            showError(context, e.message);
+          } else {
+            showError(context, 'Erro ao autenticar: $e');
+          }
         }
       }
     }
@@ -90,6 +103,7 @@ class _LoginPageState extends State<LoginPage> with MessagesMixin, LoaderMixin {
       }
     }
   }
+
   String get _authRedirectUrl {
     final configuredUrl = AppConfig.supabaseRedirectUrl;
     if (configuredUrl != null) return configuredUrl;
@@ -159,6 +173,14 @@ class _LoginPageState extends State<LoginPage> with MessagesMixin, LoaderMixin {
                       onPressed: () => setState(() => _criandoConta = !_criandoConta),
                       child: Text(_criandoConta ? 'Já tenho conta' : 'Criar nova conta'),
                     ),
+                    if (!_criandoConta)
+                      TextButton(
+                        onPressed: () => Navigator.pushNamed(
+                          context,
+                          AppRoutes.forgotPassword,
+                        ),
+                        child: const Text('Esqueci minha senha'),
+                      ),
                   ],
                 ),
               ),

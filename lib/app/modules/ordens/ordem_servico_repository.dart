@@ -70,10 +70,10 @@ class OrdemServicoRepository extends BaseRepository<OrdemServico> {
       }
     }
 
-    // Try to sync immediately if online
+    // Try to sync immediately if online (awaited so errors are not silently swallowed)
     final savedId = await salvar(ordemFinal);
     if (await ConnectivityHelper.isOnline()) {
-      offlineSyncService.syncPending();
+      await offlineSyncService.syncPending();
     }
     return savedId;
   }
