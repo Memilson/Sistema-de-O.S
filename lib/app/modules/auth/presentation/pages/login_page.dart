@@ -51,6 +51,7 @@ class _LoginPageState extends State<LoginPage> with MessagesMixin, LoaderMixin {
             e.toString().contains('ClientException');
 
         if (isNetworkError) {
+          // Fallback Offline: verifica se o e-mail digitado é o do último usuário autenticado
           final podeLogarOffline =
               await _authRepository.podeLogarOffline(emailController.text);
           hideLoading(context);

@@ -21,20 +21,27 @@ abstract class BaseRepository<T extends BaseModel> {
   String get defaultOrderBy => 'createdAt';
   bool get defaultAscending => true;
   T fromMap(Map<String, dynamic> map);
+  // Ponto de entrada unificado para salvar objetos (Cliente, O.S., etc)
   Future<String> salvar(T item) async {
     final data = _prepareData(item);
     await salvarMap(data);
     return data['id'] as String;
   }
+
+  // Gerencia o fluxo Offline-First: decide entre Supabase (online) ou SQLite (offline)
   Future<void> salvarMap(Map<String, dynamic> data) async {
     final online = await ConnectivityHelper.isOnline();
     if (online) {
       await supabase.from(tableName).upsert(data);
+      // Salva localmente para cache, mas sem marcar para sincronizar
       await _saveLocal(data, enqueue: false);
       return;
     }
+    // Modo Offline: garante persistência local e entra na fila de sincronismo
     await _saveLocal(data, enqueue: true);
   }
+
+  // Recupera dados: tenta nuvem primeiro, faz fallback para banco local se offline
   Future<List<T>> listar({String? orderBy, bool? ascending}) async {
     final user = _currentUserOrThrow();
     final online = await ConnectivityHelper.isOnline();
@@ -46,6 +53,8 @@ abstract class BaseRepository<T extends BaseModel> {
       final rows = (response as List).cast<Map<String, dynamic>>();
       return rows.map(fromMap).toList();
     }
+    
+    // Fallback para o banco de dados local do dispositivo
     if (kIsWeb) throw const AuthException('Sem conexão para consultar dados no Web');
     final db = await databaseHelper.db;
     final rows = await db.query(

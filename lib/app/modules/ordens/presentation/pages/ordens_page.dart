@@ -120,19 +120,22 @@ class _OrdensPageState extends State<OrdensPage> {
                     borderRadius: BorderRadius.circular(4),
                     border: Border.all(color: const Color(0xFFE0E0E0)),
                   ),
-                  child: ListTile(
-                    leading: Container(
-                      width: 40, height: 40,
-                      decoration: BoxDecoration(color: color.withAlpha(20), borderRadius: BorderRadius.circular(4)),
-                      child: Icon(_statusIcon(ordem.status), color: color, size: 20),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: ListTile(
+                      leading: Container(
+                        width: 40, height: 40,
+                        decoration: BoxDecoration(color: color.withAlpha(20), borderRadius: BorderRadius.circular(4)),
+                        child: Icon(_statusIcon(ordem.status), color: color, size: 20),
+                      ),
+                      title: Text(ordem.clienteNome, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                      subtitle: Text('${ordem.status} | ${ordem.descricao}', style: const TextStyle(fontSize: 12)),
+                      trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+                        Text(_currencyFormat.format(ordem.valor), style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
+                        IconButton(tooltip: 'Excluir', onPressed: () => _confirmarExclusao(ordem), icon: const Icon(AppIcons.delete, size: 20)),
+                      ]),
+                      onTap: () => _abrirDetalhe(ordem),
                     ),
-                    title: Text(ordem.clienteNome, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-                    subtitle: Text('${ordem.status} | ${ordem.descricao}', style: const TextStyle(fontSize: 12)),
-                    trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-                      Text(_currencyFormat.format(ordem.valor), style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
-                      IconButton(tooltip: 'Excluir', onPressed: () => _confirmarExclusao(ordem), icon: const Icon(AppIcons.delete, size: 20)),
-                    ]),
-                    onTap: () => _abrirDetalhe(ordem),
                   ),
                 );
               },

@@ -80,19 +80,22 @@ class _ClientesPageState extends State<ClientesPage> {
                     borderRadius: BorderRadius.circular(4),
                     border: Border.all(color: const Color(0xFFE0E0E0)),
                   ),
-                  child: ListTile(
-                    leading: Container(
-                      width: 40, height: 40,
-                      decoration: BoxDecoration(color: const Color(0xFF0078D4).withAlpha(20), borderRadius: BorderRadius.circular(4)),
-                      child: const Icon(AppIcons.person, color: Color(0xFF0078D4), size: 20),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: ListTile(
+                      leading: Container(
+                        width: 40, height: 40,
+                        decoration: BoxDecoration(color: const Color(0xFF0078D4).withAlpha(20), borderRadius: BorderRadius.circular(4)),
+                        child: const Icon(AppIcons.person, color: Color(0xFF0078D4), size: 20),
+                      ),
+                      title: Text(cliente.nome, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                      subtitle: Text(
+                        [cliente.cpfCnpj, cliente.email, cliente.telefone].where((v) => v.isNotEmpty).join(' | '),
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                      onTap: () => _abrirCadastro(cliente),
+                      trailing: IconButton(tooltip: 'Excluir', onPressed: () => _confirmarExclusao(cliente), icon: const Icon(AppIcons.delete, size: 20)),
                     ),
-                    title: Text(cliente.nome, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-                    subtitle: Text(
-                      [cliente.cpfCnpj, cliente.email, cliente.telefone].where((v) => v.isNotEmpty).join(' | '),
-                      style: const TextStyle(fontSize: 12),
-                    ),
-                    onTap: () => _abrirCadastro(cliente),
-                    trailing: IconButton(tooltip: 'Excluir', onPressed: () => _confirmarExclusao(cliente), icon: const Icon(AppIcons.delete, size: 20)),
                   ),
                 );
               },

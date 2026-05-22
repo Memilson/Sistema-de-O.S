@@ -72,7 +72,7 @@ class OfflineSyncService {
     );
 
     if (existing.isNotEmpty) {
-      // Atualiza o registro existente (deduplicação)
+      // Atualiza o registro existente (deduplicação): evita tarefas redundantes na fila
       await db.update(
         'sync_queue',
         {
@@ -103,7 +103,9 @@ class OfflineSyncService {
   // Sync
   // ---------------------------------------------------------------------------
 
+  // Processa a fila: percorre registros locais e faz o upload para o Supabase
   Future<int> syncPending() async {
+    if (kIsWeb) return 0;
     if (!await ConnectivityHelper.isOnline()) return 0;
     final user = _supabase.auth.currentUser;
     if (user == null) return 0;
@@ -138,13 +140,15 @@ class OfflineSyncService {
             payload: payload,
           );
           await _supabase.from(tableName).upsert(syncPayload);
-          // Atualiza o banco local com os paths remotos (ex: assinatura)
-          await db.update(
-            tableName,
-            syncPayload,
-            where: 'id = ?',
-            whereArgs: [recordId],
-          );
+          // No Web não atualizamos banco local
+          if (!kIsWeb) {
+            await db.update(
+              tableName,
+              syncPayload,
+              where: 'id = ?',
+              whereArgs: [recordId],
+            );
+          }
         }
         await db.update(
           'sync_queue',
