@@ -21,6 +21,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
     _fadeController.forward();
     _timer = Timer(Duration(seconds: widget.maxSeconds), () {
       if (!mounted) return;
+            // Recupera sessão persistida localmente para evitar login repetido
       final route = Supabase.instance.client.auth.currentSession == null
           ? AppRoutes.login
           : AppRoutes.dashboard;

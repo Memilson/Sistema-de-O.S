@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+  // Campo de texto padronizado com suporte a validação e máscaras
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
   final String label;

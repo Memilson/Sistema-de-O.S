@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+  // Botão customizado seguindo o Design System do projeto
 class CustomButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;

@@ -43,6 +43,7 @@ class _DashboardPageState extends State<DashboardPage> {
   void _selectStatus(_OrderStatus? status) {
     setState(() => _selectedStatus = _selectedStatus == status ? null : status);
   }
+    // Carrega os dados do dashboard, forçando um sync inicial se houver rede
   Future<void> _loadOrders() async {
     setState(() { _loading = true; _error = null; });
     try {

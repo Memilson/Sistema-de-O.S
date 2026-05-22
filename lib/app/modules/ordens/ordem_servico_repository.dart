@@ -29,6 +29,7 @@ class OrdemServicoRepository extends BaseRepository<OrdemServico> {
   @override
   OrdemServico fromMap(Map<String, dynamic> map) => OrdemServico.fromMap(map);
 
+    // Salva a O.S. garantindo que fotos e assinaturas sejam armazenadas localmente antes do sync
   Future<String> salvarComEvidencias(OrdemServico ordem, {Uint8List? fotoAntes, Uint8List? fotoDepois, Uint8List? assinatura}) async {
     final user = supabase.auth.currentUser;
     if (user == null) throw const AuthException('Usuario nao autenticado');

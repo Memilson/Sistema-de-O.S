@@ -11,6 +11,7 @@ import 'app.config.dart';
 /// 1. [connectivity_plus] para checar se há uma interface de rede ativa.
 /// 2. Uma conexão TCP real ao host do Supabase para confirmar acesso à internet
 ///    (evita falso positivo em redes Wi-Fi sem WAN ou captive portals).
+  // Helper para detecção dupla de rede: interface ativa + handshake TCP real
 class ConnectivityHelper {
   static Future<bool> isOnline() async {
     // connectivity_plus v6 retorna List<ConnectivityResult>

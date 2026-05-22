@@ -23,6 +23,7 @@ void main() async {
   _registerDependencies();
   runApp(const AppEntry());
 }
+  // Centraliza a Injeção de Dependências (Service Locator)
 void _registerDependencies() {
   final locator = ServiceLocator.instance;
   final offlineSyncService = OfflineSyncService();
